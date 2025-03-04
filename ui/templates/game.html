@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Hold'em Poker - Game</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div id="game-info">
+            <h1>Texas Hold'em Poker</h1>
+            <div id="game-id-display">Game ID: <span id="game-id">{{ game_id }}</span></div>
+            <div id="player-id-display">Player: <span id="player-name"></span></div>
+            <div id="blinds-display">Blinds: $<span id="small-blind">5</span> / $<span id="big-blind">10</span></div>
+            <div id="game-status">Status: <span id="status">Waiting</span></div>
+            <button id="start-game-btn" class="btn btn-primary">Start Game</button>
+        </div>
+        
+        <div id="poker-table">
+            <div id="table-wrapper">
+                <div id="table">
+                    <!-- Player positions will be inserted here -->
+                </div>
+                
+                <div id="pot-info">
+                    <div id="pot-display">Pot: $<span id="pot">0</span></div>
+                    <div id="chip-stack"></div>
+                </div>
+                
+                <div id="community-cards" class="card-container">
+                    <!-- Community cards will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="player-actions" class="hidden">
+            <div id="player-cards" class="card-container">
+                <!-- Player's hole cards will be inserted here -->
+            </div>
+            
+            <div id="bet-raise-container" class="hidden">
+                <input type="range" id="bet-slider" min="0" max="1000" value="0">
+                <span id="bet-amount">$0</span>
+            </div>
+            
+            <div id="player-info">
+                <div id="player-chips">Your Chips: $<span id="chips">1000</span></div>
+                <div id="player-bet">Your Bet: $<span id="bet">0</span></div>
+            </div>
+            
+            <div id="action-buttons">
+                <button id="fold-btn" class="btn btn-danger">Fold</button>
+                <button id="check-btn" class="btn btn-secondary">Check</button>
+                <button id="call-btn" class="btn btn-primary">Call</button>
+                <button id="bet-btn" class="btn btn-success">Bet</button>
+                <button id="raise-btn" class="btn btn-warning">Raise</button>
+                <button id="all-in-btn" class="btn btn-danger">All-In</button>
+            </div>
+        </div>
+        
+        <div id="game-log">
+            <h3>Game Log</h3>
+            <div id="log-entries">
+                <!-- Log entries will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- These variables will be used by the JavaScript -->
+    <script>
+        const GAME_ID = "{{ game_id }}";
+    </script>
+    <script src="/assets/js/game.js"></script>
+</body>
+</html>

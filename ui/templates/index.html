@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Hold'em Poker</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Texas Hold'em Poker</h1>
+        
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+        
+        <div class="card">
+            <h2>Create New Game</h2>
+            <form id="create-game-form">
+                <button type="submit" class="btn btn-primary">Create Game</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>Join Existing Game</h2>
+            <form id="join-game-form">
+                <div class="form-group">
+                    <label for="game-id">Game ID:</label>
+                    <input type="text" id="game-id" name="game-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="player-name">Your Name:</label>
+                    <input type="text" id="player-name" name="player-name" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Join Game</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/assets/js/home.js"></script>
+</body>
+</html>

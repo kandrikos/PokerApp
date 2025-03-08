@@ -238,7 +238,7 @@ def main():
     game = create_demo_game()
     
     # Play 3 hands
-    for i in range(6):
+    for i in range(2):
         logger.info(f"Starting hand #{i+1}")
         play_hand(game)
         logger.info(f"Hand #{i+1} complete")

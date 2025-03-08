@@ -684,7 +684,7 @@ class Game:
         """
         # Get all players who were involved in the hand
         all_players = [p for p in self.table.seats if p is not None and 
-                      (p.total_bet > 0 or p.status in (PlayerStatus.ACTIVE, PlayerStatus.ALL_IN))]
+                    (p.total_bet > 0 or p.status in (PlayerStatus.ACTIVE, PlayerStatus.ALL_IN))]
         
         if not all_players:
             self.logger.warning("No players found for pot calculation")
@@ -748,9 +748,27 @@ class Game:
             
             # If tie, compare kickers
             if len(best_players) > 1:
-                # TODO: Implement proper kicker comparison for ties
-                # For now, just split the pot evenly
-                winners = best_players
+                # Use HandEvaluator._get_kicker_key to compare hands
+                best_key = None
+                true_best_players = []
+                
+                for player_hand in best_players:
+                    player = player_hand["player"]
+                    best_cards = player_hand["best_cards"]
+                    hand_rank = player_hand["hand_rank"]
+                    
+                    # Get kicker key for this hand
+                    key = HandEvaluator._get_kicker_key(best_cards, hand_rank)
+                    
+                    # If this is the first player or this hand is better
+                    if best_key is None or key > best_key:
+                        best_key = key
+                        true_best_players = [player_hand]
+                    elif key == best_key:
+                        # True tie
+                        true_best_players.append(player_hand)
+                
+                winners = true_best_players
             else:
                 winners = best_players
             

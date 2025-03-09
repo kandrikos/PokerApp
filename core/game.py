@@ -78,10 +78,12 @@ class GameState:
     betting_round: BettingRound = BettingRound.PREFLOP
     action_history: List[ActionInfo] = field(default_factory=list)
     pots: List[Dict[str, Any]] = field(default_factory=list)
+    main_pot: int = 0
+    side_pots: List[Dict[str, Any]] = field(default_factory=list)
     current_player_idx: int = -1
     hand_number: int = 0
     config: GameConfig = field(default_factory=GameConfig)
-
+    
 
 class Game:
     """
@@ -116,6 +118,8 @@ class Game:
         self.state.status = GameStatus.WAITING
         self.state.community_cards = []
         self.state.pot = 0
+        self.state.main_pot = 0
+        self.state.side_pots = []
         self.state.current_bet = 0
         self.state.min_raise = self.config.big_blind
         
@@ -160,6 +164,8 @@ class Game:
         self.state.deck = create_deck()
         self.state.community_cards = []
         self.state.pot = 0
+        self.state.main_pot = 0
+        self.state.side_pots = []
         self.state.current_bet = 0
         self.state.min_raise = self.config.big_blind
         self.state.betting_round = BettingRound.PREFLOP
@@ -182,7 +188,6 @@ class Game:
         
         # Post blinds
         sb_pos, bb_pos = self.table.get_blinds_positions()
-        
         if sb_pos != -1 and bb_pos != -1:
             sb_player = self.table.get_player_at_position(sb_pos)
             bb_player = self.table.get_player_at_position(bb_pos)
@@ -217,7 +222,7 @@ class Game:
                 # If any blind player went all-in, adjust the min_raise accordingly
                 if sb_player.status == PlayerStatus.ALL_IN or bb_player.status == PlayerStatus.ALL_IN:
                     self.state.min_raise = max(self.config.big_blind, bb_amount)
-        
+
         # Post antes if configured
         if self.config.ante > 0:
             for player in self.table.seats:
@@ -225,7 +230,10 @@ class Game:
                     ante_amount = player.place_bet(self.config.ante)
                     self.state.pot += ante_amount
                     self.logger.info(f"Player {player.name} posts ante: {ante_amount}")
-        
+                    
+        # Calculate initial pots after blinds and antes
+        self._update_pots()
+
         # Deal hole cards
         self.state.status = GameStatus.DEALING
         self._deal_hole_cards()
@@ -286,9 +294,71 @@ class Game:
             if card:
                 self.state.community_cards.append(card)
                 new_cards.append(card)
-        
         return new_cards
     
+    def _update_pots(self) -> None:
+        """
+        Calculate and update main pot and side pots based on current bets.
+        This is called after each betting action to maintain current pot values.
+        """
+        # Get all players who have bet in this hand
+        all_players = [p for p in self.table.seats if p is not None and p.total_bet > 0]
+        
+        # No players with bets, no pots to calculate
+        if not all_players:
+            self.state.main_pot = 0
+            self.state.side_pots = []
+            return
+        
+        # Sort players by their total bet (ascending)
+        all_players.sort(key=lambda p: p.total_bet)
+        
+        # Initialize pot tracking
+        remaining_bets = {p.id: p.total_bet for p in all_players}
+        pots = []
+        
+        # Process each potential side pot
+        prev_bet = 0
+        for player in all_players:
+            if player.total_bet <= prev_bet:
+                continue  # Skip players with identical bets
+            
+            current_bet = player.total_bet
+            pot_size = 0
+            eligible_players = []
+            
+            # Calculate this pot level
+            for p_id, bet in list(remaining_bets.items()):
+                amount = min(bet, current_bet - prev_bet)
+                pot_size += amount
+                remaining_bets[p_id] -= amount
+                
+                # Player is eligible for this pot if they contributed
+                p = next((p for p in all_players if p.id == p_id), None)
+                if p and amount > 0:
+                    eligible_players.append(p_id)
+            
+            if pot_size > 0:
+                pots.append({
+                    "amount": pot_size,
+                    "eligible_players": eligible_players
+                })
+            
+            prev_bet = current_bet
+        
+        # Update game state
+        if pots:
+            # First pot is the main pot (everyone is eligible)
+            self.state.main_pot = pots[0]["amount"]
+            # Any additional pots are side pots
+            self.state.side_pots = pots[1:] if len(pots) > 1 else []
+        else:
+            self.state.main_pot = 0
+            self.state.side_pots = []
+        
+        # Also update the total pot for backward compatibility
+        self.state.pot = sum(pot["amount"] for pot in pots)
+
     def handle_player_action(self, player_id: str, action: GameAction, amount: int = 0) -> bool:
         """
         Process a player's action during their turn.
@@ -463,6 +533,11 @@ class Game:
                     # Valid raise
                     self.state.current_bet = new_bet
                     self.state.min_raise = raise_amount
+                    
+                    # Mark all players as needing to act again (except this player and folded players)
+                    for p in self.table.seats:
+                        if p is not None and p.id != player.id and p.status == PlayerStatus.ACTIVE:
+                            p.has_acted = False
                 
                 self.logger.info(f"Player {player.name} raises to {new_bet} (all-in)")
             else:
@@ -475,6 +550,9 @@ class Game:
         if action_successful:
             player.has_acted = True
             self.state.action_history.append(action_info)
+            
+            # Update pots after successful action
+            self._update_pots()
             
             # Advance to next player
             self._advance_to_next_player()
@@ -838,7 +916,7 @@ class Game:
         
         # BET is available if no current bet and player has chips
         if self.state.current_bet == 0 and player.chips > 0:
-            actions[GameAction.BET] = max(self.config.big_blind, player.chips)
+            actions[GameAction.BET] = min(self.config.big_blind, player.chips)
         
         # RAISE is available if there's a current bet and player has enough chips
         min_raise_to = self.state.current_bet + self.state.min_raise
@@ -874,6 +952,8 @@ class Game:
             "status": self.state.status.name,
             "betting_round": self.state.betting_round.name,
             "pot": self.state.pot,
+            "main_pot": self.state.main_pot,
+            "side_pots": self.state.side_pots,
             "current_bet": self.state.current_bet,
             "hand_number": self.state.hand_number,
             "community_cards": [str(card) for card in self.state.community_cards],

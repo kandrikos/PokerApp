@@ -1,0 +1,214 @@
+High card scenario
+2c 7h Js 4d 9c
+player1
+Ah 3s
+player2
+Kh 5s
+player3
+Qh 8c
+player4
+Ad 2s
+player5
+Kd 6s
+player6
+Qd 10s
+player7
+Ac 5c
+player8
+Kc 3c
+player9
+Jc 10c
+q
+
+Pair Scenario
+As 8c 3h 5d Jc
+player1
+Ah Ks
+player2
+Ad Qs
+player3
+Ac Jh
+player4
+8h Kc
+player5
+8s Qc
+player6
+8d Jh
+player7
+Kh Qh
+player8
+Qd Jd
+player9
+10h 9h
+q
+
+Two Pair Scenario
+Ks 7c 7h 2d 5c
+player1
+Ah As
+player2
+Kc Kd
+player3
+Qh Qs
+player4
+5s 5h
+player5
+2s 2c
+player6
+Ad Kh
+player7
+Kd Qd
+player8
+5d 3c
+player9
+2h Ac
+q
+
+Three of a Kind Scenario
+8s 8c 5h Jd 2c
+player1
+8h As
+player2
+8d Ks
+player3
+Jh Js
+player4
+5s 5d
+player5
+2s 2h
+player6
+Ah Kh
+player7
+Qd 10c
+player8
+10h 9c
+player9
+7h 6c
+q
+
+
+Straight Scenario
+5s 6c 7h 8d Kc
+player1
+9h 10s
+player2
+4h 3s
+player3
+9s 4s
+player4
+10c Jc
+player5
+3d 2d
+player6
+Ah Qh
+player7
+Ad Jd
+player8
+Qs Js
+player9
+10h 9c
+q
+
+
+Flush Scenario
+2s 5s 7s 10d Qc
+player1
+As Kh
+player2
+Ks Jh
+player3
+Qs 9h
+player4
+Js 8d
+player5
+9s 6h
+player6
+8s 4d
+player7
+Ah Kd
+player8
+Qd Jd
+player9
+Ad Qh
+q
+
+
+Full House Scenario
+Js Jc 8h 8d 2c
+player1
+Ah As
+player2
+Kh Ks
+player3
+Qh Qs
+player4
+Jh 8s
+player5
+Jd 2s
+player6
+8c 2h
+player7
+Ad Kc
+player8
+Ac Qd
+player9
+Kd Qc
+q
+
+
+Four of a Kind Scenario
+9s 9c 9h 2d 3c
+player1
+9d As
+player2
+2s Kh
+player3
+2c Qh
+player4
+3s Jh
+player5
+3h 10d
+player6
+Ah Kd
+player7
+Ad Qd
+player8
+Kc Qc
+player9
+Js 10c
+q
+
+
+2s, 2d, Qs, 10s, Js
+kostas
+10d, Jh
+sam
+Qc, Ah
+peter
+Qd, Ad
+q
+
+
+
+
+
+2s, 2d, Qs, 10s, Js
+kostas
+10d, Jh
+sam
+Qc, 5h
+peter
+As, 3s
+mitsos
+9s, 8s
+george
+2h, 2c
+marios
+Qd, Qh
+john
+Jc, Jd
+anne
+6s, Ks
+q
+
+
